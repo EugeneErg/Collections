@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace EugeneErg\Collections;
+
+/**
+ * @extends MixedCollection<object>
+ * @implements ObjectCollectionInterface<object>
+ */
+class ObjectCollection extends MixedCollection implements ObjectCollectionInterface
+{
+    protected const ITEM_TYPE = 'is_object';
+
+    public function changeKeysFromValue(string $propertyName): static
+    {
+        return $this->setItems(array_column($this->toArray(), null, $propertyName));
+    }
+}
