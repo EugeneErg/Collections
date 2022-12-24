@@ -1,22 +1,29 @@
 # Типизированные коллекции #
 
-## Иммутабельная типизированная коллекция классов
+## Объявление типизированной коллекции
 ```php
-class CustomCollection extends AbstractImmutableCollection
+class CustomCollection extends ObjectCollection
 {
-    protected const ITEM_TYPE = Custom::class,// Допустимое имя класса элемента
+    protected const ITEM_TYPE = Custom::class;// Допустимое имя класса элемента
 }
 ```
-## Иммутабельная типизированная коллекция типов
+## Создание иммутабельной коллекции
 ```php
-class CustomCollection extends AbstractImmutableCollection
-{
-    protected const ITEM_TYPE = 'is_int',// Метод, для валидации элемента
-}
+$collection = new CustomCollection([new Custom()], true/*иммутабельная*/);
+
+unset($collection[0]);//Будет выброшено исключение
 ```
-## Имеющиеся коллекции ##
+## Список предопределенных коллекций:
 ```php
-class MixedCollection implements CollectionInterface// Элементы любого типа
+namespace EugeneErg\Collections;
 
-
+use MixedCollection;// Любые типы
+use ObjectCollection;// Объекты
+use ScalarCollection;// Скалярные типы
+use NumberCollection;// Числовые типы
+use FloatCollection;// Числа с плавающей точкой
+use IntegerCollection;// Целые числа
+use StringCollection;// Строки
+use SortCollection;// Классы наследующие Sort
+use BooleanCollection;// Булевы 
 ```
