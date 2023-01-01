@@ -72,6 +72,7 @@ interface CollectionInterface extends IteratorAggregate, ArrayAccess, JsonSerial
     public function shuffle(): static;
     public function sort(bool $asc = true, ?bool $withKeys = null, ?callable $callable = null): static;
     public function unique(): static;
+    public function setImmutable(bool $immutable = true): static;
     /** @param T $item */
     public function isValidItem(mixed $item): bool;
     public function isEmpty(): bool;
@@ -100,6 +101,5 @@ interface CollectionInterface extends IteratorAggregate, ArrayAccess, JsonSerial
     public function search(mixed $needle, bool $strict = false): int|string|null;
     /** @return array<T> */
     public function toArray(): array;
-
     public function count(): int;
 }

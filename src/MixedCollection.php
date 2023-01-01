@@ -384,6 +384,14 @@ class MixedCollection implements CollectionInterface
         return $this->setItems(array_unique($this->items, SORT_REGULAR));
     }
 
+    public function setImmutable(bool $immutable = true): static
+    {
+        $result = $this->getMutableCollection();
+        $result->immutable = $immutable;
+
+        return $result;
+    }
+
     private function checkMutable(): void
     {
         if ($this->immutable) {
