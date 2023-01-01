@@ -93,12 +93,12 @@ class MixedCollection implements CollectionInterface
 
     public function changeKeys(ScalarCollection $collection, bool $immutable = true): static
     {
-        return $this->setItems(array_combine($collection->items, $this->items));
+        return $this->setItemsWithoutValidate(array_combine($collection->items, $this->items));
     }
 
     public function changeKeyCase(bool $toUpper = true): static
     {
-        return $this->setItems(array_change_key_case($this->items, $toUpper ? CASE_UPPER : CASE_LOWER));
+        return $this->setItemsWithoutValidate(array_change_key_case($this->items, $toUpper ? CASE_UPPER : CASE_LOWER));
     }
 
     public static function fromWalk(CollectionInterface $collection, callable $callback, bool $immutable = true): static
@@ -254,12 +254,12 @@ class MixedCollection implements CollectionInterface
 
     public function reverse(bool $preserveKeys = false): static
     {
-        return $this->setItems(array_reverse($this->items, $preserveKeys));
+        return $this->setItemsWithoutValidate(array_reverse($this->items, $preserveKeys));
     }
 
     public function filter(callable $callback = null): static
     {
-        return $this->setItems(array_filter($this->items, $callback, ARRAY_FILTER_USE_BOTH));
+        return $this->setItemsWithoutValidate(array_filter($this->items, $callback, ARRAY_FILTER_USE_BOTH));
     }
 
     /** @inheritDoc */
@@ -288,7 +288,7 @@ class MixedCollection implements CollectionInterface
 
     public function slice(int $offset = 0, ?int $length = null, bool $preserveKeys = false): static
     {
-        return $this->setItems(array_slice($this->items, $offset, $length, $preserveKeys));
+        return $this->setItemsWithoutValidate(array_slice($this->items, $offset, $length, $preserveKeys));
     }
 
     /** @inheritDoc */
@@ -314,7 +314,7 @@ class MixedCollection implements CollectionInterface
     /** @inheritDoc */
     public function fill(int $length, mixed $value): static
     {
-        return $this->setItems(array_pad($this->items, $length, $value));
+        return $this->setItemsWithoutValidate(array_pad($this->items, $length, $value));
     }
 
     /** @inheritDoc */
@@ -339,7 +339,7 @@ class MixedCollection implements CollectionInterface
 
     public function values(): static
     {
-        return $this->setItems(array_values($this->items));
+        return $this->setItemsWithoutValidate(array_values($this->items));
     }
 
     public function shuffle(): static
@@ -381,7 +381,7 @@ class MixedCollection implements CollectionInterface
 
     public function unique(): static
     {
-        return $this->setItems(array_unique($this->items, SORT_REGULAR));
+        return $this->setItemsWithoutValidate(array_unique($this->items, SORT_REGULAR));
     }
 
     public function setImmutable(bool $immutable = true): static
@@ -399,7 +399,7 @@ class MixedCollection implements CollectionInterface
         }
     }
 
-    protected function setItems(array $items): static
+    protected function setItemsWithoutValidate(array $items): static
     {
         $result = $this->getMutableCollection();
         $result->items = $items;

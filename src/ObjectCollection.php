@@ -14,6 +14,6 @@ class ObjectCollection extends MixedCollection implements ObjectCollectionInterf
 
     public function changeKeysFromValue(string $propertyName): static
     {
-        return $this->setItems(array_column($this->toArray(), null, $propertyName));
+        return $this->setItemsWithoutValidate(array_column($this->toArray(), null, $propertyName));
     }
 }

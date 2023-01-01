@@ -71,6 +71,6 @@ class StringCollection extends ScalarCollection implements StringCollectionInter
 
     public function unique(bool $asNumeric = false): static
     {
-        return $this->setItems(array_unique($this->toArray(), $asNumeric ? SORT_NUMERIC : SORT_REGULAR));
+        return $this->setItemsWithoutValidate(array_unique($this->toArray(), $asNumeric ? SORT_NUMERIC : SORT_REGULAR));
     }
 }

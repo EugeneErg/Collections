@@ -23,7 +23,7 @@ class CollectionCollection extends ObjectCollection implements CollectionCollect
             return null;
         }
 
-        return $this->setItems(array_map(
+        return $this->setItemsWithoutValidate(array_map(
             fn (array $data) => static::itemFromArray($data, $collection->isImmutable()),
             array_chunk($collection->toArray(), $length, $preserveKeys),
         ));
