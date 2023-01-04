@@ -246,6 +246,12 @@ class MixedCollection implements CollectionInterface
         return array_key_exists($key, $this->items);
     }
 
+    public function equals(CollectionInterface $collection): bool
+    {
+        return get_class($collection) === static::class
+            && $this->items === $collection->items;
+    }
+
     /** @inheritDoc */
     public function has(mixed $needle, bool $strict = false): bool
     {

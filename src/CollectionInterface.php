@@ -79,6 +79,7 @@ interface CollectionInterface extends IteratorAggregate, ArrayAccess, JsonSerial
     public function isImmutable(): bool;
     public function isList(): bool;
     public function keyExists(string|int $key): bool;
+    public function equals(self $collection): bool;
     /** @param T $needle */
     public function has(mixed $needle, bool $strict = false): bool;
 
