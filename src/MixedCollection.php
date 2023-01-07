@@ -17,7 +17,7 @@ class MixedCollection implements CollectionInterface
 {
     protected const ITEM_TYPE = null;
 
-    public function __construct(protected array $items = [], private readonly bool $immutable = true)
+    public function __construct(protected array $items = [], private bool $immutable = true)
     {
         $this->validateItems($items);
     }
@@ -392,7 +392,7 @@ class MixedCollection implements CollectionInterface
 
     public function setImmutable(bool $immutable = true): static
     {
-        $result = $this->getMutableCollection();
+        $result = $immutable === $this->immutable ? $this : $this->getMutableCollection();
         $result->immutable = $immutable;
 
         return $result;

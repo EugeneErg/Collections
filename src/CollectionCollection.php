@@ -119,6 +119,3 @@ class CollectionCollection extends ObjectCollection implements CollectionCollect
         return $result;
     }
 }
-
-$c = new CollectionCollection();
-$a = $c->offsetGet(1);
