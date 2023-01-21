@@ -189,7 +189,7 @@ class MixedCollection implements CollectionInterface
     }
 
     /** @inheritDoc */
-    public function getIterator(): iterable
+    public function getIterator(): \Traversable
     {
         return new ArrayIterator($this->items);
     }
