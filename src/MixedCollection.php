@@ -35,7 +35,12 @@ class MixedCollection implements CollectionInterface
 
     public static function fromMap(bool $immutable, callable $callback, CollectionInterface ...$collections): static
     {
-        return static::fromArray(array_map($callback, ...static::collectionsToArrays($collections)), $immutable);
+        return static::fromArray(
+            count($collections) === 0
+                ? []
+                : array_map($callback, ...static::collectionsToArrays($collections)),
+            $immutable,
+        );
     }
 
     public static function fromDiff(
