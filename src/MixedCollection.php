@@ -463,11 +463,11 @@ class MixedCollection implements CollectionInterface
             $arguments[] = $key;
         }
 
-        $method = implode('_', [
+        $method = implode('_', array_filter([
             'array',
             (is_callable($value) ? 'u' : '') . ($isDiff ? 'diff' : 'intersect'),
             (is_callable($key) ? 'u' : '') . ($key === false ? '' : ($value === false ? 'key' : 'assoc')),
-        ]);
+        ], fn (string $part): bool => $part !== ''));
 
         return static::fromArray($method(...$arguments), $immutable);
     }
