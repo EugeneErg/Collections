@@ -449,6 +449,14 @@ class MixedCollection implements CollectionInterface
         bool|callable $key,
         CollectionInterface ...$collections,
     ): static {
+        if (count($collections) === 0 || ($value === false && $key === false && !$isDiff)) {
+            return static::fromArray([], $immutable);
+        }
+
+        if ($value === false && $key === false) {
+            return static::fromInstance(end($collections), $immutable);
+        }
+
         $arguments = self::collectionsToArrays($collections);
 
         if ($value === true) {
