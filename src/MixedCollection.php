@@ -28,41 +28,16 @@ class MixedCollection implements CollectionInterface
         return new static($items, $immutable);
     }
 
-    public static function fromMerge(bool $immutable, CollectionInterface ...$collections): static
+    public static function fromInstance(CollectionInterface $collection, bool $immutable = true): static
     {
-        return static::fromArray(array_merge(...self::collectionsToArrays($collections)), $immutable);
+        return static::fromArray($collection->toArray(), $immutable);
     }
 
-    public static function fromMap(bool $immutable, callable $callback, CollectionInterface ...$collections): static
-    {
-        return static::fromArray(
-            count($collections) === 0
-                ? []
-                : array_map($callback, ...static::collectionsToArrays($collections)),
-            $immutable,
-        );
-    }
-
-    public static function fromDiff(
-        bool $immutable,
-        bool|callable $value,
-        bool|callable $key,
-        CollectionInterface ...$collections,
+    public static function fromFillKeys(
+        ScalarCollectionInterface $collection,
+        mixed $value,
+        bool $immutable = true,
     ): static {
-        return self::fromIntersectOrDiff($immutable, true, $value, $key, ...$collections);
-    }
-
-    public static function fromIntersect(
-        bool $immutable,
-        bool|callable $value,
-        bool|callable $key,
-        CollectionInterface ...$collections,
-    ): static {
-        return self::fromIntersectOrDiff($immutable, false, $value, $key, ...$collections);
-    }
-
-    public static function fromFillKeys(ScalarCollectionInterface $collection, mixed $value, bool $immutable = true): static
-    {
         return static::fromArray(array_fill_keys($collection->items, $value), $immutable);
     }
 
@@ -78,32 +53,7 @@ class MixedCollection implements CollectionInterface
         string $indexKey = null,
         bool $immutable = true,
     ): static {
-        return static::fromArray(array_column($collection->items, $columnKey, $indexKey), $immutable);
-    }
-
-    public static function fromReplace(bool $immutable, CollectionInterface ...$collections): static
-    {
-        return static::fromArray(
-            count($collections) === 0
-                ? []
-                : array_replace(...self::collectionsToArrays($collections)),
-            $immutable,
-        );
-    }
-
-    public static function fromInstance(CollectionInterface $collection, bool $immutable = true): static
-    {
-        return static::fromArray($collection->toArray(), $immutable);
-    }
-
-    public function changeKeys(ScalarCollection $collection, bool $immutable = true): static
-    {
-        return $this->setItemsWithoutValidate(array_combine($collection->items, $this->items));
-    }
-
-    public function changeKeyCase(bool $toUpper = true): static
-    {
-        return $this->setItemsWithoutValidate(array_change_key_case($this->items, $toUpper ? CASE_UPPER : CASE_LOWER));
+        return static::fromArray(array_column($collection->items, $columnKey, $indexKey));
     }
 
     public static function fromWalk(CollectionInterface $collection, callable $callback, bool $immutable = true): static
@@ -129,138 +79,43 @@ class MixedCollection implements CollectionInterface
         return static::fromArray($items, $immutable);
     }
 
-    /** @inheritDoc */
-    public function isValidItem(mixed $item): bool
+    public static function fromMerge(CollectionInterface ...$collections): static
     {
-        if (static::ITEM_TYPE === null) {
-            return true;
-        }
-
-        if (is_callable(static::ITEM_TYPE)) {
-            return (static::ITEM_TYPE)($item);
-        }
-
-        $type = static::ITEM_TYPE;
-
-        return $item instanceof $type;
+        return static::fromArray(array_merge(...self::collectionsToArrays($collections)));
     }
 
-    /** @inheritDoc */
-    public function reduce(callable $callback, mixed $initial = null): mixed
+    public static function fromReplace(CollectionInterface ...$collections): static
     {
-        return array_reduce($this->items, $callback, $initial);
+        return static::fromArray(
+            count($collections) === 0
+                ? []
+                : array_replace(...self::collectionsToArrays($collections)),
+        );
     }
 
-    public function keyByPosition(int $position): int|string|null
+    public static function fromMap(callable $callback, CollectionInterface ...$collections): static
     {
-        return array_key_first(array_slice($this->items, $position, 1, true));
+        return static::fromArray(
+            count($collections) === 0
+                ? []
+                : array_map($callback, ...static::collectionsToArrays($collections)),
+        );
     }
 
-    public function firstKey(): int|string|null
-    {
-        return array_key_first($this->items);
+    public static function fromDiff(
+        bool|callable $value,
+        bool|callable $key,
+        CollectionInterface ...$collections,
+    ): static {
+        return self::fromIntersectOrDiff(true, $value, $key, ...$collections);
     }
 
-    public function lastKey(): int|string|null
-    {
-        return array_key_last($this->items);
-    }
-
-    #[Pure] public function randomKey(): int|string|null
-    {
-        return $this->isEmpty() ? null : array_rand($this->items);
-    }
-
-    /** @inheritDoc */
-    public function search(mixed $needle, bool $strict = true): int|string|null
-    {
-        $result = array_search($needle, $this->items, $strict);
-
-        return $result === false ? null : $result;
-    }
-
-    #[Pure] public function first(): mixed
-    {
-        $key = $this->firstKey();
-
-        return $key === null ? null : $this->items[$key];
-    }
-
-    #[Pure] public function last(): mixed
-    {
-        $key = $this->lastKey();
-
-        return $key === null ? null : $this->items[$key];
-    }
-
-    /** @inheritDoc */
-    public function getIterator(): \Traversable
-    {
-        return new ArrayIterator($this->items);
-    }
-
-    /** @inheritDoc */
-    public function toArray(): array
-    {
-        return $this->items;
-    }
-
-    /** @inheritDoc */
-    public function offsetExists($offset): bool
-    {
-        return isset($this->items[(string) $offset]);
-    }
-
-    /** @inheritDoc */
-    public function offsetGet($offset): mixed
-    {
-        return $this->items[(string) $offset];
-    }
-
-    /** @inheritDoc */
-    public function offsetSet($offset, $value): void
-    {
-        $this->checkMutable();
-        $this->set($value, $offset);
-    }
-
-    /** @inheritDoc */
-    public function offsetUnset($offset): void
-    {
-        $this->checkMutable();
-        $this->unset($offset);
-    }
-
-    public function isEmpty(): bool
-    {
-        return count($this->items) === 0;
-    }
-
-    public function isImmutable(): bool
-    {
-        return $this->immutable;
-    }
-
-    public function isList(): bool
-    {
-        return array_is_list($this->items);
-    }
-
-    public function keyExists(string|int $key): bool
-    {
-        return array_key_exists($key, $this->items);
-    }
-
-    public function equals(CollectionInterface $collection): bool
-    {
-        return get_class($collection) === static::class
-            && $this->items === $collection->items;
-    }
-
-    /** @inheritDoc */
-    public function has(mixed $needle, bool $strict = false): bool
-    {
-        return in_array($needle, $this->items, $strict);
+    public static function fromIntersect(
+        bool|callable $value,
+        bool|callable $key,
+        CollectionInterface ...$collections,
+    ): static {
+        return self::fromIntersectOrDiff(false, $value, $key, ...$collections);
     }
 
     public function reverse(bool $preserveKeys = false): static
@@ -273,18 +128,9 @@ class MixedCollection implements CollectionInterface
         return $this->setItemsWithoutValidate(array_filter($this->items, $callback, ARRAY_FILTER_USE_BOTH));
     }
 
-    /** @inheritDoc */
-    public function shift(): mixed
+    public function slice(int $offset = 0, ?int $length = null, bool $preserveKeys = false): static
     {
-        $this->checkMutable();
-        return array_shift($this->items);
-    }
-
-    /** @inheritDoc */
-    public function pop(): mixed
-    {
-        $this->checkMutable();
-        return array_pop($this->items);
+        return $this->setItemsWithoutValidate(array_slice($this->items, $offset, $length, $preserveKeys));
     }
 
     public function splice(int $offset = 0, int $length = null, CollectionInterface $replacement = null): static
@@ -297,9 +143,21 @@ class MixedCollection implements CollectionInterface
         return self::fromArray($result);
     }
 
-    public function slice(int $offset = 0, ?int $length = null, bool $preserveKeys = false): static
+    public function replaceKeys(ScalarCollectionInterface $collection): static
     {
-        return $this->setItemsWithoutValidate(array_slice($this->items, $offset, $length, $preserveKeys));
+        return $this->setItemsWithoutValidate(array_combine($collection->items, $this->items));
+    }
+
+    public function changeKeys(callable $callback): static
+    {
+        return $this->replaceKeys(ScalarCollection::fromMap($callback, StringCollection::fromKeys($this)));
+    }
+
+    public function setKeyCase(bool $toUpper = true): static
+    {
+        return $this->setItemsWithoutValidate(
+            array_change_key_case($this->items, $toUpper ? CASE_UPPER : CASE_LOWER),
+        );
     }
 
     /** @inheritDoc */
@@ -348,7 +206,7 @@ class MixedCollection implements CollectionInterface
         return $result;
     }
 
-    public function values(): static
+    public function toList(): static
     {
         return $this->setItemsWithoutValidate(array_values($this->items));
     }
@@ -403,11 +261,174 @@ class MixedCollection implements CollectionInterface
         return $result;
     }
 
-    private function checkMutable(): void
+    /** @inheritDoc */
+    public function isValidItem(mixed $item): bool
     {
-        if ($this->immutable) {
-            throw new LogicException('Is immutable collection');
+        if (static::ITEM_TYPE === null) {
+            return true;
         }
+
+        if (is_callable(static::ITEM_TYPE)) {
+            return (static::ITEM_TYPE)($item);
+        }
+
+        $type = static::ITEM_TYPE;
+
+        return $item instanceof $type;
+    }
+
+    public function isEmpty(): bool
+    {
+        return count($this->items) === 0;
+    }
+
+    public function isImmutable(): bool
+    {
+        return $this->immutable;
+    }
+
+    public function isList(): bool
+    {
+        return array_is_list($this->items);
+    }
+
+    public function keyExists(string|int $key): bool
+    {
+        return array_key_exists($key, $this->items);
+    }
+
+    public function equals(CollectionInterface $collection): bool
+    {
+        return get_class($collection) === static::class
+            && $this->items === $collection->items;
+    }
+
+    /** @inheritDoc */
+    public function has(mixed $needle, bool $strict = false): bool
+    {
+        return in_array($needle, $this->items, $strict);
+    }
+
+    /** @inheritDoc */
+    public function offsetExists($offset): bool
+    {
+        return isset($this->items[(string) $offset]);
+    }
+
+    #[Pure] public function first(): mixed
+    {
+        $key = $this->firstKey();
+
+        return $key === null ? null : $this->items[$key];
+    }
+
+    #[Pure] public function last(): mixed
+    {
+        $key = $this->lastKey();
+
+        return $key === null ? null : $this->items[$key];
+    }
+
+    /** @inheritDoc */
+    public function reduce(callable $callback, mixed $initial = null): mixed
+    {
+        return array_reduce($this->items, $callback, $initial);
+    }
+
+    /** @inheritDoc */
+    public function shift(): mixed
+    {
+        $this->checkMutable();
+        return array_shift($this->items);
+    }
+
+    /** @inheritDoc */
+    public function pop(): mixed
+    {
+        $this->checkMutable();
+        return array_pop($this->items);
+    }
+
+    /** @inheritDoc */
+    public function offsetGet($offset): mixed
+    {
+        return $this->items[(string) $offset];
+    }
+
+    public function keyByPosition(int $position): int|string|null
+    {
+        return array_key_first(array_slice($this->items, $position, 1, true));
+    }
+
+    public function firstKey(): int|string|null
+    {
+        return array_key_first($this->items);
+    }
+
+    public function lastKey(): int|string|null
+    {
+        return array_key_last($this->items);
+    }
+
+    #[Pure] public function randomKey(): int|string|null
+    {
+        return $this->isEmpty() ? null : array_rand($this->items);
+    }
+
+    /** @inheritDoc */
+    public function search(mixed $needle, bool $strict = true): int|string|null
+    {
+        $result = array_search($needle, $this->items, $strict);
+
+        return $result === false ? null : $result;
+    }
+
+    /** @inheritDoc */
+    public function find(callable $needle): int|string|null
+    {
+        foreach ($this as $key => $value) {
+            if ($needle($value)) {
+                return $key;
+            }
+        }
+
+        return null;
+    }
+
+    /** @inheritDoc */
+    public function offsetSet($offset, $value): void
+    {
+        $this->checkMutable();
+        $this->set($value, $offset);
+    }
+
+    /** @inheritDoc */
+    public function offsetUnset($offset): void
+    {
+        $this->checkMutable();
+        $this->unset($offset);
+    }
+
+    /** @inheritDoc */
+    public function toArray(): array
+    {
+        return $this->items;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->items;
+    }
+
+    public function count(): int
+    {
+        return count($this->items);
+    }
+
+    /** @inheritDoc */
+    public function getIterator(): \Traversable
+    {
+        return new ArrayIterator($this->items);
     }
 
     protected function setItemsWithoutValidate(array $items): static
@@ -421,6 +442,13 @@ class MixedCollection implements CollectionInterface
     protected function getMutableCollection(): static
     {
         return $this->immutable ? clone $this : $this;
+    }
+
+    private function checkMutable(): void
+    {
+        if ($this->immutable) {
+            throw new LogicException('Is immutable collection');
+        }
     }
 
     private static function collectionsToArrays(array $collections): array
@@ -443,18 +471,17 @@ class MixedCollection implements CollectionInterface
     }
 
     private static function fromIntersectOrDiff(
-        bool $immutable,
         bool $isDiff,
         bool|callable $value,
         bool|callable $key,
         CollectionInterface ...$collections,
     ): static {
         if (count($collections) === 0 || ($value === false && $key === false && !$isDiff)) {
-            return static::fromArray([], $immutable);
+            return static::fromArray([]);
         }
 
         if ($value === false && $key === false) {
-            return static::fromInstance(end($collections), $immutable);
+            return static::fromInstance(end($collections));
         }
 
         $arguments = self::collectionsToArrays($collections);
@@ -477,16 +504,6 @@ class MixedCollection implements CollectionInterface
             (is_callable($key) ? 'u' : '') . ($key === false ? '' : ($value === false ? 'key' : 'assoc')),
         ], fn (string $part): bool => $part !== ''));
 
-        return static::fromArray($method(...$arguments), $immutable);
-    }
-
-    public function jsonSerialize(): array
-    {
-        return $this->items;
-    }
-
-    public function count(): int
-    {
-        return count($this->items);
+        return static::fromArray($method(...$arguments));
     }
 }

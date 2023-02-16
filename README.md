@@ -27,3 +27,24 @@ use StringCollection;// Строки
 use SortCollection;// Классы наследующие Sort
 use BooleanCollection;// Булевы 
 ```
+
+## Установка
+
+Добавьте в **composer.json**
+```json
+{
+  ...
+  "repositories": [
+    ...
+    {
+      "type": "git",
+      "url": "git@github.com:EugeneErg/Collections.git"
+    }
+  ]
+}
+```
+
+Затем выполните
+```
+composer require EugeneErg/Collections
+```

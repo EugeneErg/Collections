@@ -1,7 +1,7 @@
 {
   "name": "eugeneerg/collections",
   "description": "Typed collections",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "license": "MIT",
   "require": {
     "php": ">=8.1"
