@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace EugeneErg\Collections;
 
 use ArrayIterator;
+use EugeneErg\Collections\Traits\ImmutableTrait;
 use InvalidArgumentException;
 use JetBrains\PhpStorm\Pure;
 use LogicException;
+use Traversable;
 
 /**
  * @template T
@@ -15,6 +17,8 @@ use LogicException;
  */
 class MixedCollection implements CollectionInterface
 {
+    use ImmutableTrait;
+    
     protected const ITEM_TYPE = null;
 
     public function __construct(protected array $items = [], private bool $immutable = true)
@@ -163,7 +167,7 @@ class MixedCollection implements CollectionInterface
     /** @inheritDoc */
     public function set(mixed $value, int|string|null $key = null): static
     {
-        $result = $this->getMutableCollection();
+        $result = $this->getMutable();
         $this->validate($value);
         $key === null
             ? $result->items[] = $value
@@ -174,7 +178,7 @@ class MixedCollection implements CollectionInterface
 
     public function unset(int|string $key): static
     {
-        $result = $this->getMutableCollection();
+        $result = $this->getMutable();
         unset($result->items[$key]);
 
         return $result;
@@ -190,7 +194,7 @@ class MixedCollection implements CollectionInterface
     public function push(mixed ...$values): static
     {
         $this->validateItems($values);
-        $result = $this->getMutableCollection();
+        $result = $this->getMutable();
         array_push($result->items, ...$values);
 
         return $result;
@@ -200,7 +204,7 @@ class MixedCollection implements CollectionInterface
     public function unshift(mixed ...$values): static
     {
         $this->validateItems($values);
-        $result = $this->getMutableCollection();
+        $result = $this->getMutable();
         array_unshift($result->items, ...$values);
 
         return $result;
@@ -213,7 +217,7 @@ class MixedCollection implements CollectionInterface
 
     public function shuffle(): static
     {
-        $result = $this->getMutableCollection();
+        $result = $this->getMutable();
         shuffle($result->items);
 
         return $result;
@@ -221,7 +225,7 @@ class MixedCollection implements CollectionInterface
 
     public function sort(bool $asc = true, ?bool $withKeys = null, ?callable $callable = null): static
     {
-        $result = $this->getMutableCollection();
+        $result = $this->getMutable();
 
         if ($callable === null) {
             if ($withKeys === null) {
@@ -253,14 +257,6 @@ class MixedCollection implements CollectionInterface
         return $this->setItemsWithoutValidate(array_unique($this->items, SORT_REGULAR));
     }
 
-    public function setImmutable(bool $immutable = true): static
-    {
-        $result = $immutable === $this->immutable ? $this : $this->getMutableCollection();
-        $result->immutable = $immutable;
-
-        return $result;
-    }
-
     /** @inheritDoc */
     public function isValidItem(mixed $item): bool
     {
@@ -280,11 +276,6 @@ class MixedCollection implements CollectionInterface
     public function isEmpty(): bool
     {
         return count($this->items) === 0;
-    }
-
-    public function isImmutable(): bool
-    {
-        return $this->immutable;
     }
 
     public function isList(): bool
@@ -370,7 +361,7 @@ class MixedCollection implements CollectionInterface
         return array_key_last($this->items);
     }
 
-    #[Pure] public function randomKey(): int|string|null
+    public function randomKey(): int|string|null
     {
         return $this->isEmpty() ? null : array_rand($this->items);
     }
@@ -426,22 +417,17 @@ class MixedCollection implements CollectionInterface
     }
 
     /** @inheritDoc */
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->items);
     }
 
     protected function setItemsWithoutValidate(array $items): static
     {
-        $result = $this->getMutableCollection();
+        $result = $this->getMutable();
         $result->items = $items;
 
         return $result;
-    }
-
-    protected function getMutableCollection(): static
-    {
-        return $this->immutable ? clone $this : $this;
     }
 
     private function checkMutable(): void
