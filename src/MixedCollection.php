@@ -21,8 +21,9 @@ class MixedCollection implements CollectionInterface
     
     protected const ITEM_TYPE = null;
 
-    public function __construct(protected array $items = [], private bool $immutable = true)
+    public function __construct(protected array $items = [], bool $immutable = true)
     {
+        $this->immutable = $immutable;
         $this->validateItems($items);
     }
 
