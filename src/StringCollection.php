@@ -55,7 +55,7 @@ class StringCollection extends ScalarCollection implements StringCollectionInter
             return parent::sort($asc, $withKeys, $callable);
         }
 
-        $result = $this->getMutableCollection();
+        $result = $this->getMutable();
         $flag = $callable->value | ($ignoreCase ? SORT_FLAG_CASE : 0);
 
         if ($withKeys === null) {

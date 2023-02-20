@@ -43,7 +43,7 @@ class NumberCollection extends ScalarCollection implements NumberCollectionInter
             return parent::sort($asc, $withKeys, $callable);
         }
 
-        $result = $this->getMutableCollection();
+        $result = $this->getMutable();
 
         if ($withKeys === null) {
             $asc ? asort($result->items, SORT_STRING) : arsort($result->items, SORT_STRING);

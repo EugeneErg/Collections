@@ -106,7 +106,7 @@ class CollectionCollection extends ObjectCollection implements CollectionCollect
         }
 
         unset($item);
-        $result = $this->getMutableCollection();
+        $result = $this->getMutable();
         $result->items = [];
         array_multisort($sorted);
         /** @var CollectionInterface $type */
