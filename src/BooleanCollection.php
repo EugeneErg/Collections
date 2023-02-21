@@ -11,7 +11,7 @@ namespace EugeneErg\Collections;
  * @method static fill(int $length, bool $value)
  * @method static push(bool ...$values)
  * @method static unshift(bool ...$values)
- * @method bool isValidItem(bool $item)
+ * @method static bool isValidItem(bool $item)
  * @method bool has(bool $needle, bool $strict = false)
  * @method bool offsetGet(int|string|null $offset)
  * @method int|string|null search(bool $needle, bool $strict = false)

@@ -71,7 +71,7 @@ interface CollectionInterface extends IteratorAggregate, ArrayAccess, JsonSerial
     public function setImmutable(bool $immutable = true): static;
 
     /** @param T $item */
-    public function isValidItem(mixed $item): bool;
+    public static function isValidItem(mixed $item): bool;
     public function isEmpty(): bool;
     public function isImmutable(): bool;
     public function isList(): bool;

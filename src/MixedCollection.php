@@ -6,7 +6,7 @@ namespace EugeneErg\Collections;
 
 use ArrayIterator;
 use EugeneErg\Collections\Traits\ImmutableTrait;
-use InvalidArgumentException;
+use EugeneErg\Collections\Traits\ValidateTrait;
 use JetBrains\PhpStorm\Pure;
 use LogicException;
 use Traversable;
@@ -18,13 +18,12 @@ use Traversable;
 class MixedCollection implements CollectionInterface
 {
     use ImmutableTrait;
-    
-    protected const ITEM_TYPE = null;
+    use ValidateTrait;
 
     public function __construct(protected array $items = [], bool $immutable = true)
     {
         $this->immutable = $immutable;
-        $this->validateItems($items);
+        self::validateItems($items);
     }
 
     /** @inheritDoc */
@@ -142,7 +141,7 @@ class MixedCollection implements CollectionInterface
     {
         $this->checkMutable();
         $items = $replacement?->items ?? [];
-        $this->validateItems($items);
+        self::validateItems($items);
         $result = array_splice($this->items, $offset, $length, $items);
 
         return self::fromArray($result);
@@ -169,7 +168,7 @@ class MixedCollection implements CollectionInterface
     public function set(mixed $value, int|string|null $key = null): static
     {
         $result = $this->getMutable();
-        $this->validate($value);
+        self::validate($value);
         $key === null
             ? $result->items[] = $value
             : $result->items[(string) $key] = $value;
@@ -194,7 +193,7 @@ class MixedCollection implements CollectionInterface
     /** @inheritDoc */
     public function push(mixed ...$values): static
     {
-        $this->validateItems($values);
+        self::validateItems($values);
         $result = $this->getMutable();
         array_push($result->items, ...$values);
 
@@ -204,7 +203,7 @@ class MixedCollection implements CollectionInterface
     /** @inheritDoc */
     public function unshift(mixed ...$values): static
     {
-        $this->validateItems($values);
+        self::validateItems($values);
         $result = $this->getMutable();
         array_unshift($result->items, ...$values);
 
@@ -228,27 +227,16 @@ class MixedCollection implements CollectionInterface
     {
         $result = $this->getMutable();
 
-        if ($callable === null) {
-            if ($withKeys === null) {
-                $asc ? asort($result->items) : arsort($result->items);
-            } elseif ($withKeys === true) {
-                $asc ? ksort($result->items) : krsort($result->items);
-            } else {
-                $asc ? sort($result->items) : rsort($result->items);
-            }
-        } else {
-            if (!$asc) {
-                $callable = fn (mixed $value1, mixed $value2): int => - $callable($value1, $value2);
-            }
-
-            if ($withKeys === null) {
-                uasort($result->items, $callable);
-            } elseif ($withKeys === true) {
-                uksort($result->items, $callable);
-            } else {
-                usort($result->items, $callable);
-            }
+        if (!$asc && $callable !== null) {
+            return $this->sort(true, $withKeys, fn (mixed $value1, mixed $value2): int => $callable($value2, $value1));
         }
+
+        $method = ($callable === null ? '' : 'u') . match ($withKeys) {
+            true => 'k',
+            false => '',
+            null => 'a',
+        } . ($asc ? '' : 'r') . 'sort';
+        $callable === null ? $method($result->items) : $method($result->items, $callable);
 
         return $result;
     }
@@ -256,22 +244,6 @@ class MixedCollection implements CollectionInterface
     public function unique(): static
     {
         return $this->setItemsWithoutValidate(array_unique($this->items, SORT_REGULAR));
-    }
-
-    /** @inheritDoc */
-    public function isValidItem(mixed $item): bool
-    {
-        if (static::ITEM_TYPE === null) {
-            return true;
-        }
-
-        if (is_callable(static::ITEM_TYPE)) {
-            return (static::ITEM_TYPE)($item);
-        }
-
-        $type = static::ITEM_TYPE;
-
-        return $item instanceof $type;
     }
 
     public function isEmpty(): bool
@@ -441,20 +413,6 @@ class MixedCollection implements CollectionInterface
     private static function collectionsToArrays(array $collections): array
     {
         return array_map(fn (self $collection): array => $collection->items, $collections);
-    }
-
-    private function validate(mixed $item): void
-    {
-        if (!$this->isValidItem($item)) {
-            throw new InvalidArgumentException('Invalid item');
-        }
-    }
-
-    private function validateItems(array $items): void
-    {
-        foreach ($items as $item) {
-            $this->validate($item);
-        }
     }
 
     private static function fromIntersectOrDiff(

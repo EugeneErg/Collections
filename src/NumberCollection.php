@@ -35,8 +35,7 @@ class NumberCollection extends ScalarCollection implements NumberCollectionInter
         bool $asString = false,
     ): static {
         if ($callable !== null && $asString) {
-            $callable = fn (float|int $value1, float|int $value2): int
-                => (int) $callable((string) $value1, (string) $value2);
+            $callable = fn (float|int $value1, float|int $value2): int => $callable((string) $value1, (string) $value2);
         }
 
         if ($asString === false || $callable !== null) {
@@ -44,14 +43,12 @@ class NumberCollection extends ScalarCollection implements NumberCollectionInter
         }
 
         $result = $this->getMutable();
-
-        if ($withKeys === null) {
-            $asc ? asort($result->items, SORT_STRING) : arsort($result->items, SORT_STRING);
-        } elseif ($withKeys === true) {
-            $asc ? ksort($result->items, SORT_STRING) : krsort($result->items, SORT_STRING);
-        } else {
-            $asc ? sort($result->items, SORT_STRING) : rsort($result->items, SORT_STRING);
-        }
+        $method = match ($withKeys) {
+            null => 'a',
+            true => 'k',
+            false => '',
+        } . ($asc ? '' : 'r') . 'sort';
+        $method($result->items, SORT_STRING);
 
         return $result;
     }

@@ -14,7 +14,7 @@ use EugeneErg\Collections\DataTransferObjects\Sort;
  * @method static fill(int $length, Sort $value)
  * @method static push(Sort ...$values)
  * @method static unshift(Sort ...$values)
- * @method bool isValidItem(Sort $item)
+ * @method static bool isValidItem(Sort $item)
  * @method bool has(Sort $needle, bool $strict = false)
  * @method Sort offsetGet(int|string|null $offset)
  * @method int|string|null search(Sort $needle, bool $strict = false)

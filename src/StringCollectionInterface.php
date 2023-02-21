@@ -14,7 +14,7 @@ use EugeneErg\Collections\Enums\SortTypeEnum;
  * @method static fill(int $length, string $value)
  * @method static push(string ...$values)
  * @method static unshift(string ...$values)
- * @method bool isValidItem(string $item)
+ * @method static bool isValidItem(string $item)
  * @method bool has(string $needle, bool $strict = false)
  * @method string offsetGet(int|string|null $offset)
  * @method int|string|null search(string $needle, bool $strict = false)

@@ -47,8 +47,7 @@ class StringCollection extends ScalarCollection implements StringCollectionInter
         bool $ignoreCase = false,
     ): static {
         if (is_callable($callable) && $ignoreCase) {
-            $callable = fn (string $value1, string $value2): int
-                => (int) $callable(strtolower($value1), strtolower($value2));
+            $callable = fn (string $value1, string $value2): int => $callable(strtolower($value1), strtolower($value2));
         }
 
         if (in_array($callable, [null, SortTypeEnum::String], true) || is_callable($callable)) {
@@ -57,14 +56,12 @@ class StringCollection extends ScalarCollection implements StringCollectionInter
 
         $result = $this->getMutable();
         $flag = $callable->value | ($ignoreCase ? SORT_FLAG_CASE : 0);
-
-        if ($withKeys === null) {
-            $asc ? asort($result->items, $flag) : arsort($result->items, $flag);
-        } elseif ($withKeys === true) {
-            $asc ? ksort($result->items, $flag) : krsort($result->items, $flag);
-        } else {
-            $asc ? sort($result->items, $flag) : rsort($result->items, $flag);
-        }
+        $method = match ($withKeys) {
+            null => 'a',
+            true => 'k',
+            false => '',
+        } . ($asc ? '' : 'r') . 'sort';
+        $method($result->items, $flag);
 
         return $result;
     }
