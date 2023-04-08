@@ -8,7 +8,7 @@ use EugeneErg\Collections\Enums\SortTypeEnum;
 
 class StringCollection extends ScalarCollection implements StringCollectionInterface
 {
-    protected const ITEM_TYPE = 'is_string';
+    protected const VALUE_TYPE = 'is_string';
 
     public static function fromKeys(CollectionInterface $collection, bool $immutable = true): static
     {

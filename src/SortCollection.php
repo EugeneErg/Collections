@@ -12,5 +12,5 @@ use EugeneErg\Collections\DataTransferObjects\Sort;
  */
 class SortCollection extends ObjectCollection implements SortCollectionInterface
 {
-    protected const ITEM_TYPE = Sort::class;
+    protected const VALUE_TYPE = Sort::class;
 }

@@ -10,7 +10,7 @@ namespace EugeneErg\Collections;
  */
 class IntegerCollection extends NumberCollection implements IntegerCollectionInterface
 {
-    protected const ITEM_TYPE = 'is_integer';
+    protected const VALUE_TYPE = 'is_integer';
 
     public static function fromKeys(CollectionInterface $collection, bool $immutable = true): static
     {

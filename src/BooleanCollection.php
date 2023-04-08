@@ -8,7 +8,7 @@ namespace EugeneErg\Collections;
  * @method static static fromFillKeys(ScalarCollectionInterface $collection, bool $value, bool $immutable = true)
  * @method static static fromFill(int $startIndex, int $count, bool $value, bool $immutable = true)
  * @method static set(bool $value, int|string|null $key = null)
- * @method static fill(int $length, bool $value)
+ * @method static fromFillPad(int $length, bool $value)
  * @method static push(bool ...$values)
  * @method static unshift(bool ...$values)
  * @method static bool isValidItem(bool $item)
@@ -21,5 +21,5 @@ namespace EugeneErg\Collections;
  */
 class BooleanCollection extends MixedCollection
 {
-    protected const ITEM_TYPE = 'is_bool';
+    protected const VALUE_TYPE = 'is_bool';
 }

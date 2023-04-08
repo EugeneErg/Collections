@@ -4,29 +4,35 @@ declare(strict_types=1);
 
 namespace EugeneErg\Collections\Traits;
 
-use InvalidArgumentException;
+use Stringable;
 
 trait ValidateTrait
 {
-    protected const ITEM_TYPE = null;
+    private static function isValidItems(
+        array $items,
+        callable|string|null $valueType = null,
+        callable|string|null $keyType = null,
+    ): bool {
+        $valueCallback = self::getValidator($valueType);
+        $keyCallback = self::getValidator($keyType);
 
-    public static function isValidItems(array $items): bool
-    {
-        if (static::ITEM_TYPE === null) {
+        if ($valueType === null && $keyType === null) {
             return true;
-        }
-
-        if (is_callable(static::ITEM_TYPE)) {
-            foreach ($items as $item) {
-                if (!(static::ITEM_TYPE)($item)) {
+        } elseif ($valueType !== null && $keyType !== null) {
+            foreach ($items as $key => $value) {
+                if (!$valueCallback($value) || !$keyCallback($key)) {
+                    return false;
+                }
+            }
+        } elseif ($valueType !== null) {
+            foreach ($items as $value) {
+                if (!$valueCallback($value)) {
                     return false;
                 }
             }
         } else {
-            $type = static::ITEM_TYPE;
-
-            foreach ($items as $item) {
-                if (!$item instanceof $type) {
+            foreach ($items as $key => $value) {
+                if (!$keyCallback($key)) {
                     return false;
                 }
             }
@@ -35,22 +41,21 @@ trait ValidateTrait
         return true;
     }
 
-    public static function isValidItem(mixed $item): bool
+    private static function getValidator(callable|string|null $type): callable
     {
-        return static::isValidItems([$item]);
-    }
-
-    private static function validate(mixed $item): void
-    {
-        if (!self::isValidItem($item)) {
-            throw new InvalidArgumentException('Invalid item');
+        if (is_callable($type)) {
+            return $type;
         }
-    }
 
-    private static function validateItems(array $items): void
-    {
-        if (!self::isValidItems($items)) {
-            throw new InvalidArgumentException('Invalid items');
+        if ($type === null) {
+            return fn (mixed $item): bool => true;
         }
+
+        if (class_exists($type)) {
+            return fn (mixed $item): bool => $item instanceof $type;
+        }
+
+        return fn (mixed $item): bool => (is_scalar($item) || $item instanceof Stringable)
+            && preg_match($type, (string) $item) > 0;
     }
 }

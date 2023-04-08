@@ -11,7 +11,7 @@ use EugeneErg\Collections\DataTransferObjects\Sort;
  * @method static static fromFillKeys(ScalarCollectionInterface $collection, Sort $value, bool $immutable = true)
  * @method static static fromFill(int $startIndex, int $count, Sort $value, bool $immutable = true)
  * @method static set(Sort $value, int|string|null $key = null)
- * @method static fill(int $length, Sort $value)
+ * @method static fromFillPad(int $length, Sort $value)
  * @method static push(Sort ...$values)
  * @method static unshift(Sort ...$values)
  * @method static bool isValidItem(Sort $item)

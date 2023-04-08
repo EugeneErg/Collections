@@ -9,22 +9,24 @@ use IteratorAggregate;
 use JsonSerializable;
 
 /**
- * @template T
- * @extends ArrayAccess<array-key, T>
- * @extends IteratorAggregate<array-key, T>
+ * @template V
+ * @template K
+ * @extends ArrayAccess<K, V>
+ * @extends IteratorAggregate<K, V>
  */
 interface CollectionInterface extends IteratorAggregate, ArrayAccess, JsonSerializable
 {
-    /** @param array<array-key, T> $items */
-    public static function fromArray(array $items, bool $immutable = true): static;
+    /** @param array<K, V> $items */
+    public static function fromArray(array $items = [], bool $immutable = true): static;
+    public static function fromMixedArray(array $items, callable $callback, bool $immutable = true): static;
     public static function fromInstance(self $collection, bool $immutable = true): static;
-    public static function fromFillKeys(ScalarCollectionInterface $collection, $value, bool $immutable = true): static;
-    /** @param T $value */
-    public static function fromFill(int $startIndex, int $count, mixed $value, bool $immutable = true): static;
+    public static function fromFillKeys(self $collection, mixed $value, bool $immutable = true): static;
+    /** @param V $value */
+    public static function fromFill(int $start, int $count, mixed $value, bool $immutable = true): static;
     public static function fromColumn(
         ObjectCollectionInterface $collection,
-        string $columnKey,
-        string $indexKey = null,
+        string $valueColumn,
+        string $keyColumn = null,
         bool $immutable = true,
     ): static;
     public static function fromWalk(self $collection, callable $callback, bool $immutable = true): static;
@@ -47,6 +49,9 @@ interface CollectionInterface extends IteratorAggregate, ArrayAccess, JsonSerial
         bool|callable $key,
         self ...$collections,
     ): static;
+    public static function fromValues(self $collection, bool $immutable = true): static;
+    public static function fromKeys(self $collection, bool $immutable): static;
+    public static function fromCombine(self $keys, self $values, bool $immutable = true): static;
 
     public function reverse(bool $preserveKeys = false): static;
     public function filter(callable $callback = null): static;
@@ -55,52 +60,61 @@ interface CollectionInterface extends IteratorAggregate, ArrayAccess, JsonSerial
     public function replaceKeys(ScalarCollectionInterface $collection): static;
     public function changeKeys(callable $callback): static;
     public function setKeyCase(bool $toUpper = true): static;
-    /** @param T $value */
-    public function set(mixed $value, int|string|null $key = null): static;
-    public function unset(int|string $key): static;
-    /** @param T $value */
+    /**
+     * @param V $value
+     * @param K $key
+     */
+    public function set(mixed $value, mixed $key = null): static;
+    /** @param K $key */
+    public function unset(mixed $key): static;
+    /** @param V $value */
     public function fill(int $length, mixed $value): static;
-    /** @param array<array-key, T> $values */
-    public function push(...$values): static;
-    /** @param array<array-key, T> $values */
-    public function unshift(...$values): static;
-    public function toList(): static;
+    public function push(self $collection): static;
+    public function unshift(self $collection): static;
     public function shuffle(): static;
     public function sort(bool $asc = true, ?bool $withKeys = null, ?callable $callable = null): static;
     public function unique(): static;
     public function setImmutable(bool $immutable = true): static;
 
-    /** @param T $item */
-    public static function isValidItem(mixed $item): bool;
+    /** @param V $value */
+    public static function isValidValue(mixed $value): bool;
+    /** @param K $key */
+    public static function isValidKey(mixed $key): bool;
     public function isEmpty(): bool;
     public function isImmutable(): bool;
     public function isList(): bool;
-    public function keyExists(string|int $key): bool;
-    public function equals(self $collection): bool;
-    /** @param T $needle */
-    public function has(mixed $needle, bool $strict = false): bool;
+    public function keyExists(mixed $key): bool;
+    public function equals(self $collection, bool $strict = false): bool;
+    /** @param V $value */
+    public function has(mixed $value, bool $strict = false): bool;
 
-    /** @return T */
+    /** @return V|null */
     public function first(): mixed;
-    /** @return T */
+    /** @return V|null */
     public function last(): mixed;
-    /** @return T */
+    /** @return V|null */
     public function reduce(callable $callback, $initial = null): mixed;
-    /** @return T */
+    /** @return V|null */
     public function shift(): mixed;
-    /** @return T */
+    /** @return V|null */
     public function pop(): mixed;
 
-    public function keyByPosition(int $position): int|string|null;
-    public function firstKey(): int|string|null;
-    public function lastKey(): int|string|null;
-    public function randomKey(): int|string|null;
-    /** @param T $needle */
-    public function search(mixed $needle, bool $strict = false): int|string|null;
-    /** @param T $needle */
-    public function find(callable $needle): int|string|null;
-
-    /** @return array<T> */
+    /** @return K|null */
+    public function keyByPosition(int $position): mixed;
+    /** @return K|null */
+    public function firstKey(): mixed;
+    /** @return K|null */
+    public function lastKey(): mixed;
+    /** @return K|null */
+    public function randomKey(): mixed;
+    /**
+     * @param V $value
+     * @return K
+     */
+    public function search(mixed $value, bool $strict = false): mixed;
+    /** @return K */
+    public function find(callable $needle): mixed;
+    /** @return array<K, V> */
     public function toArray(): array;
     public function count(): int;
 }

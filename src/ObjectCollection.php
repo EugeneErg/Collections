@@ -10,7 +10,7 @@ namespace EugeneErg\Collections;
  */
 class ObjectCollection extends MixedCollection implements ObjectCollectionInterface
 {
-    protected const ITEM_TYPE = 'is_object';
+    protected const VALUE_TYPE = 'is_object';
 
     public function changeKeysFromValue(string $propertyName): static
     {

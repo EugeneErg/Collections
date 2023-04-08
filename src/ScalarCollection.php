@@ -11,7 +11,7 @@ namespace EugeneErg\Collections;
  */
 class ScalarCollection extends MixedCollection implements ScalarCollectionInterface
 {
-    protected const ITEM_TYPE = 'is_scalar';
+    protected const VALUE_TYPE = 'is_scalar';
 
     public function fromFlip(ScalarCollectionInterface $collection, bool $immutable = true): static
     {

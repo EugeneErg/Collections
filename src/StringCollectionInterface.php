@@ -11,7 +11,7 @@ use EugeneErg\Collections\Enums\SortTypeEnum;
  * @method static static fromFillKeys(ScalarCollectionInterface $collection, string $value, bool $immutable = true)
  * @method static static fromFill(int $startIndex, int $count, bool $value, string $immutable = true)
  * @method static set(string $value, int|string|null $key = null)
- * @method static fill(int $length, string $value)
+ * @method static fromFillPad(int $length, string $value)
  * @method static push(string ...$values)
  * @method static unshift(string ...$values)
  * @method static bool isValidItem(string $item)

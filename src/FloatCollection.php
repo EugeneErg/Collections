@@ -10,7 +10,7 @@ namespace EugeneErg\Collections;
  */
 class FloatCollection extends NumberCollection implements FloatCollectionInterface
 {
-    protected const ITEM_TYPE = 'is_float';
+    protected const VALUE_TYPE = 'is_float';
 
     public static function range(float $start, float $end, float $step, bool $immutable = true): static
     {

@@ -11,7 +11,7 @@ namespace EugeneErg\Collections;
  * @method static static fromFillKeys(ScalarCollectionInterface $collection, int|float $value, bool $immutable = true)
  * @method static static fromFill(int $startIndex, int $count, bool $value, int|float $immutable = true)
  * @method static set(int|float $value, int|string|null $key = null)
- * @method static fill(int $length, int|float $value)
+ * @method static fromFillPad(int $length, int|float $value)
  * @method static push(int|float ...$values)
  * @method static unshift(int|float ...$values)
  * @method static bool isValidItem(int|float $item)

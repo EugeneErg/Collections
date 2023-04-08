@@ -12,7 +12,7 @@ use EugeneErg\Collections\DataTransferObjects\Sort;
  */
 class CollectionCollection extends ObjectCollection implements CollectionCollectionInterface
 {
-    protected const ITEM_TYPE = CollectionInterface::class;
+    protected const VALUE_TYPE = CollectionInterface::class;
 
     public function chunk(string|int $key, int $length, bool $preserveKeys = false): ?static
     {
@@ -32,7 +32,7 @@ class CollectionCollection extends ObjectCollection implements CollectionCollect
     public function merge(bool $recursive = false, bool $immutable = true): CollectionInterface
     {
         /** @var CollectionInterface $itemType */
-        $itemType = static::ITEM_TYPE;
+        $itemType = static::VALUE_TYPE;
 
         return $recursive && is_subclass_of($itemType, CollectionCollectionInterface::class)
             ? $itemType::fromArrayRecursive(array_merge_recursive( ...$this->toArrayRecursive()), null, $immutable)
@@ -42,7 +42,7 @@ class CollectionCollection extends ObjectCollection implements CollectionCollect
     public function replace(bool $recursive = false, bool $immutable = true): CollectionInterface
     {
         /** @var CollectionInterface $itemType */
-        $itemType = static::ITEM_TYPE;
+        $itemType = static::VALUE_TYPE;
 
         return $recursive && is_subclass_of($itemType, CollectionCollectionInterface::class)
             ? $itemType::fromArrayRecursive(array_replace_recursive( ...$this->toArrayRecursive()), null, $immutable)
@@ -52,7 +52,7 @@ class CollectionCollection extends ObjectCollection implements CollectionCollect
     public static function itemFromArray(array $data, bool $immutable = true): CollectionInterface
     {
         /** @var CollectionInterface $itemType */
-        $itemType = static::ITEM_TYPE;
+        $itemType = static::VALUE_TYPE;
 
         return $itemType::fromArray($data, $immutable);
     }
@@ -61,7 +61,7 @@ class CollectionCollection extends ObjectCollection implements CollectionCollect
     {
         $result = [];
         /** @var CollectionCollectionInterface $class */
-        $class = static::ITEM_TYPE;
+        $class = static::VALUE_TYPE;
 
         foreach ($items as $key => $value) {
             $result[$key] = is_subclass_of($class, CollectionCollectionInterface::class) && ($level > 0 || $level === null)
@@ -110,7 +110,7 @@ class CollectionCollection extends ObjectCollection implements CollectionCollect
         $result->items = [];
         array_multisort($sorted);
         /** @var CollectionInterface $type */
-        $type = static::ITEM_TYPE;
+        $type = static::VALUE_TYPE;
 
         foreach ($items as $key => $item) {
             $result->items[$key] = $type::fromArray($item);
