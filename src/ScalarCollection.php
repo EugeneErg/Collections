@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace EugeneErg\Collections;
 
-/**
- * @template T
- * @extends MixedCollection<T>
- * @implements SortCollectionInterface<T>
- */
+/** @implements CollectionInterface<scalar> */
 class ScalarCollection extends MixedCollection implements ScalarCollectionInterface
 {
     protected const VALUE_TYPE = 'is_scalar';

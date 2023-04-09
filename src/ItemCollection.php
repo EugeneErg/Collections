@@ -7,6 +7,10 @@ namespace EugeneErg\Collections;
 use EugeneErg\Collections\DataTransferObjects\Item;
 use Traversable;
 
+/**
+ * @implements CollectionInterface<Item>
+ * @implements ObjectCollection<Item>
+ */
 class ItemCollection extends ObjectCollection
 {
     /** @psalm-var class-string<Item> */

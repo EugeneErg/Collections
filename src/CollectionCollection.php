@@ -7,7 +7,8 @@ namespace EugeneErg\Collections;
 use EugeneErg\Collections\DataTransferObjects\Sort;
 
 /**
- * @extends ObjectCollection<CollectionInterface>
+ * @implements CollectionInterface<CollectionInterface>
+ * @implements ObjectCollectionInterface<CollectionInterface>
  * @implements CollectionCollectionInterface<CollectionInterface>
  */
 class CollectionCollection extends ObjectCollection implements CollectionCollectionInterface

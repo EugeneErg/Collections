@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace EugeneErg\Collections;
 
 /**
- * @extends NumberCollection<int>
- * @implements IntegerCollectionInterface<int>
+ * @implements CollectionInterface<int>
+ * @implements FloatCollectionInterface<int>
  */
 class IntegerCollection extends NumberCollection implements IntegerCollectionInterface
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace EugeneErg\Collections;
 
 /**
- * @extends MixedCollection<object>
+ * @implements CollectionInterface<object>
  * @implements ObjectCollectionInterface<object>
  */
 class ObjectCollection extends MixedCollection implements ObjectCollectionInterface

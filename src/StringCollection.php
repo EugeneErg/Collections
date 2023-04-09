@@ -6,6 +6,10 @@ namespace EugeneErg\Collections;
 
 use EugeneErg\Collections\Enums\SortTypeEnum;
 
+/**
+ * @implements CollectionInterface<string>
+ * @implements ScalarCollectionInterface<string>
+ */
 class StringCollection extends ScalarCollection implements StringCollectionInterface
 {
     protected const VALUE_TYPE = 'is_string';

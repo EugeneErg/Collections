@@ -5,24 +5,23 @@ declare(strict_types=1);
 namespace EugeneErg\Collections;
 
 /**
- * @template T
- * @extends ScalarCollection<T>
- * @implements NumberCollectionInterface<T>
+ * @extends CollectionInterface<numeric>
+ * @implements NumberCollectionInterface<numeric>
  */
 class NumberCollection extends ScalarCollection implements NumberCollectionInterface
 {
+    protected const VALUE_TYPE = 'is_numeric';
+
     public static function fromCountValues(ScalarCollectionInterface $collection, bool $immutable = true): static
     {
         return static::fromArray(array_count_values($collection->toArray()), $immutable);
     }
 
-    /** @inheritDoc */
     public function product(): float
     {
         return array_product($this->toArray());
     }
 
-    /** @inheritDoc */
     public function sum(): float
     {
         return array_sum($this->toArray());

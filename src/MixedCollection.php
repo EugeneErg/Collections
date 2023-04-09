@@ -12,9 +12,7 @@ use LogicException;
 use Traversable;
 
 /**
- * @template K
- * @template-covariant V
- * @implements MixedCollectionInterface<K, V>
+ * @implements CollectionInterface<mixed>
  */
 class MixedCollection implements CollectionInterface
 {
@@ -26,14 +24,12 @@ class MixedCollection implements CollectionInterface
     protected const VALUE_TYPE = null;
     protected const KEY_TYPE = null;
 
-    /** @param array<K, V> $items */
     public function __construct(protected array $items = [], bool $immutable = true)
     {
         self::validateItems($items);
         $this->immutable = $immutable;
     }
 
-    /** @inheritDoc */
     public static function fromArray(array $items = [], bool $immutable = true): static
     {
         return new static($items, $immutable);
@@ -65,7 +61,6 @@ class MixedCollection implements CollectionInterface
         return static::fromArray(array_fill_keys($collection->toArray(), $value), $immutable);
     }
 
-    /** @inheritDoc */
     public static function fromFill(int $start, int $count, mixed $value, bool $immutable = true): static
     {
         return static::fromArray(array_fill($start, $count, $value), $immutable);
@@ -207,7 +202,6 @@ class MixedCollection implements CollectionInterface
         );
     }
 
-    /** @inheritDoc */
     public function set(mixed $value, mixed $key = null): static
     {
         $result = $this->getMutable();
@@ -227,7 +221,6 @@ class MixedCollection implements CollectionInterface
         return $result;
     }
 
-    /** @inheritDoc */
     public function fill(int $length, mixed $value): static
     {
         return $this->setItemsWithoutValidate(array_pad($this->items, $length, $value));
@@ -310,18 +303,17 @@ class MixedCollection implements CollectionInterface
             && $strict ? $this->items === $collection->items : $this->items == $collection->items;
     }
 
-    /** @inheritDoc */
     public function has(mixed $value, bool $strict = false): bool
     {
         return in_array($value, $this->items, $strict);
     }
 
-    /** @inheritDoc */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->items[(string) $offset]);
     }
 
+    /** @inheritDoc */
     public function first(): mixed
     {
         $key = $this->firstKey();
@@ -336,13 +328,11 @@ class MixedCollection implements CollectionInterface
         return $key === null ? null : $this->items[$key];
     }
 
-    /** @inheritDoc */
     public function reduce(callable $callback, mixed $initial = null): mixed
     {
         return array_reduce($this->items, $callback, $initial);
     }
 
-    /** @inheritDoc */
     public function shift(): mixed
     {
         $this->checkMutable();
@@ -350,7 +340,6 @@ class MixedCollection implements CollectionInterface
         return array_shift($this->items);
     }
 
-    /** @inheritDoc */
     public function pop(): mixed
     {
         $this->checkMutable();
@@ -358,7 +347,6 @@ class MixedCollection implements CollectionInterface
         return array_pop($this->items);
     }
 
-    /** @inheritDoc */
     public function offsetGet(mixed $offset): mixed
     {
         return $this->items[(string) $offset];
@@ -384,7 +372,6 @@ class MixedCollection implements CollectionInterface
         return $this->isEmpty() ? null : array_rand($this->items);
     }
 
-    /** @inheritDoc */
     public function search(mixed $value, bool $strict = true): mixed
     {
         /** @var mixed $result */
@@ -404,21 +391,18 @@ class MixedCollection implements CollectionInterface
         return null;
     }
 
-    /** @inheritDoc */
     public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->checkMutable();
         $this->set($value, $offset);
     }
 
-    /** @inheritDoc */
     public function offsetUnset(mixed $offset): void
     {
         $this->checkMutable();
         $this->unset($offset);
     }
 
-    /** @inheritDoc */
     public function toArray(): array
     {
         return $this->items;
@@ -434,7 +418,6 @@ class MixedCollection implements CollectionInterface
         return count($this->items);
     }
 
-    /** @inheritDoc */
     public function getIterator(): Traversable
     {
         return new ArrayIterator($this->items);
@@ -461,7 +444,7 @@ class MixedCollection implements CollectionInterface
     }
 
     /**
-     * function                value key
+     * function        value key
      * array_*_assoc   true  true
      * array_*_key     false true
      * array_*_uassoc  true  func

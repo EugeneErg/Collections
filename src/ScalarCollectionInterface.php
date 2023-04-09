@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace EugeneErg\Collections;
 
 /**
- * @template T
- * @extends CollectionInterface<T>
+ * @template TValue
+ * @template TKey
+ * @extends CollectionInterface<TKey, TValue>
  */
 interface ScalarCollectionInterface extends CollectionInterface
 {

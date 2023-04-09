@@ -6,8 +6,8 @@ namespace EugeneErg\Collections\Enums;
 
 enum SortTypeEnum: int
 {
-    case String = SORT_STRING;
-    case Numeric = SORT_NUMERIC;
-    case LocaleString = SORT_LOCALE_STRING;
-    case Natural = SORT_NATURAL;
+    case String = 2;//SORT_STRING;
+    case Numeric = 1;//SORT_NUMERIC;
+    case LocaleString = 5;//SORT_LOCALE_STRING;
+    case Natural = 6;//SORT_NATURAL;
 }
