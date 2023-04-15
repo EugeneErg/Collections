@@ -124,7 +124,10 @@ interface CollectionInterface extends IteratorAggregate, ArrayAccess, JsonSerial
     public function getIterator(): Traversable;
     /** @param TKey $offset */
     public function offsetExists(mixed $offset): bool;
-    /** @param TKey $offset */
+    /**
+     * @param TKey $offset
+     * @return TValue
+     */
     public function offsetGet(mixed $offset): mixed;
     /**
      * @param TKey $offset
