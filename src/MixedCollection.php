@@ -517,4 +517,15 @@ class MixedCollection implements CollectionInterface
             throw new InvalidArgumentException('Invalid items');
         }
     }
+
+    public function getUpdatingIterator(): Traversable
+    {
+        for (
+            $value = reset($this->items);
+            null !== $key = key($this->items);
+            $value = next($this->items)
+        ) {
+            yield $key => $value;
+        }
+    }
 }

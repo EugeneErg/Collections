@@ -136,4 +136,6 @@ interface CollectionInterface extends IteratorAggregate, ArrayAccess, JsonSerial
     public function offsetSet(mixed $offset, mixed $value): void;
     /** @param TKey $offset */
     public function offsetUnset(mixed $offset): void;
+
+    public function getUpdatingIterator(): Traversable;
 }

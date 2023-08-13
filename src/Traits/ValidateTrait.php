@@ -51,7 +51,7 @@ trait ValidateTrait
             return fn (mixed $item): bool => true;
         }
 
-        if (class_exists($type)) {
+        if (class_exists($type) || interface_exists($type)) {
             return fn (mixed $item): bool => $item instanceof $type;
         }
 

@@ -11,5 +11,5 @@ namespace EugeneErg\Collections;
  */
 interface ScalarCollectionInterface extends CollectionInterface
 {
-    public function fromFlip(ScalarCollectionInterface $collection, bool $immutable = true): static;
+    public static function fromFlip(ScalarCollectionInterface $collection, bool $immutable = true): static;
 }
