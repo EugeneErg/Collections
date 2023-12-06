@@ -26,7 +26,7 @@ class MixedCollection implements CollectionInterface
 
     public function __construct(protected array $items = [], bool $immutable = true)
     {
-        self::validateItems($items);
+        static::validateItems($items, static::VALUE_TYPE, static::KEY_TYPE);
         $this->immutable = $immutable;
     }
 
@@ -37,7 +37,7 @@ class MixedCollection implements CollectionInterface
 
     public static function fromMixedArray(array $items, callable $callback, bool $immutable = true): static
     {
-        return static::fromWalk(self::fromArray($items), $callback, $immutable);
+        return static::fromWalk(static::fromArray($items), $callback, $immutable);
     }
 
     public static function fromCombine(
@@ -135,7 +135,7 @@ class MixedCollection implements CollectionInterface
         return static::fromArray(
             count($collections) === 0
                 ? []
-                : array_map($callback, ...static::collectionsToArrays($collections)),
+                : array_map($callback, ...self::collectionsToArrays($collections)),
         );
     }
 
@@ -179,10 +179,10 @@ class MixedCollection implements CollectionInterface
     {
         $this->checkMutable();
         $items = $replacement?->items ?? [];
-        self::validateItems($items);
+        static::validateItems($items, static::VALUE_TYPE, static::KEY_TYPE);
         $result = array_splice($this->items, $offset, $length, $items);
 
-        return self::fromArray($result);
+        return static::fromArray($result);
     }
 
     public function replaceKeys(CollectionInterface $collection): static
@@ -228,8 +228,8 @@ class MixedCollection implements CollectionInterface
 
     public function push(CollectionInterface $collection): static
     {
-        $values = self::fromValues($collection)->toArray();
-        self::validateItems($values);
+        $values = static::fromValues($collection)->toArray();
+        static::validateItems($values, static::VALUE_TYPE, static::KEY_TYPE);
         $result = $this->getMutable();
         array_push($result->items, ...$values);
 
@@ -238,8 +238,8 @@ class MixedCollection implements CollectionInterface
 
     public function unshift(CollectionInterface $collection): static
     {
-        $values = self::fromValues($collection)->toArray();
-        self::validateItems($values);
+        $values = static::fromValues($collection)->toArray();
+        static::validateItems($values, static::VALUE_TYPE, static::KEY_TYPE);
         $result = $this->getMutable();
         array_unshift($result->items, ...$values);
 
@@ -503,7 +503,7 @@ class MixedCollection implements CollectionInterface
 
     private static function validate(mixed $item): void
     {
-        if (!self::isValidValue($item)) {
+        if (!static::isValidValue($item)) {
             throw new InvalidArgumentException('Invalid item');
         }
     }
